@@ -4,219 +4,222 @@ import cProfile
 
 pygame.init()
 window = pygame.display.set_mode((300, 300))
-world = [[0]*300 for i in range(300)]
+world = [[None] * 300 for i in range(300)]
 animals = set()
 died = set()
 born = set()
 
+
 class animal:
-    color = None
-    life = 0
-    age = 0
-    zapladniacz = False
-    rodzacy = False
-    lifeLong = 100
-    alive = True
-    posX = 0
-    posY = 0
-    ciaza = 0
-    lenCiaza = 0
-    def __init__(self, posX = 0, posY = 0, zapladniacz = True, rodzacy = True):
-        self.color = (255,255,255)
-        self.life = 10
-        self.age = 0
-        self.zapladniacz = zapladniacz
-        self.rodzacy = rodzacy
-        self.alive = True
-        self.posX = posX
-        self.posY = posY
-        self.ciaza = -10
-        self.lenCiaza = 50
-        self.lifeLong = 255
-        self.trup = False
-    def die(self):
-        global died
-        self.trup = True
-        world[self.posY][self.posX] = 0
-        died.add(self)
+  color = None
+  life = 0
+  age = 0
+  zapladniacz = False
+  rodzacy = False
+  lifeLong = 100
+  alive = True
+  posX = 0
+  posY = 0
+  ciaza = 0
+  lenCiaza = 0
 
-    def go(self):
-        global died
-        self.age += 1
-        self.smierc()
-        if self.trup:
-            return False
-        if self.ciaza != 0:
-            self.ciaza += 1
-        self.insemination()
-        self.narodziny()
+  def __init__(self, posX=0, posY=0, zapladniacz=True, rodzacy=True):
+    self.color = (255, 255, 255)
+    self.life = 10
+    self.age = 0
+    self.zapladniacz = zapladniacz
+    self.rodzacy = rodzacy
+    self.alive = True
+    self.posX = posX
+    self.posY = posY
+    self.ciaza = -10
+    self.lenCiaza = 50
+    self.lifeLong = 255
+    self.trup = False
 
-        kierunki = [1,3,2,4]
-        for n in range(10):
-            i = int(random.random()*4)
-            j = int(random.random()*4)
-            kierunki[i], kierunki[j] = kierunki[j], kierunki[i]
-        poruszony = False
+  def die(self):
+    global died
+    self.trup = True
+    world[self.posY][self.posX] = None
+    died.add(self)
 
-        #print(kierunki)
-        for kierunek in kierunki:
-            match kierunek:
-                case 1:
-                    poruszony = self.goRight()
-                case 2:
-                    poruszony = self.goLeft()
-                case 3:
-                    poruszony = self.goUp()
-                case 4:
-                    poruszony = self.goDown()
-            if poruszony:
-                break
-        # for kierunek in kierunki:
-        #     if kierunek == 1 and poruszony is False:
-        #         poruszony = self.goRight()
-        #     if kierunek == 2 and poruszony is False:
-        #         poruszony = self.goLeft()
-        #     if kierunek == 3 and poruszony is False:
-        #         poruszony = self.goUp()
-        #     if kierunek == 4 and poruszony is False:
-        #         poruszony = self.goDown()
-        #     if poruszony:
-        #         break
-        return poruszony
-    def smierc(self):
-        if self.age >= self.lifeLong:
-            self.die()
+  def go(self):
+    global died
+    self.age += 1
+    self.death()
+    if self.trup:
+      return False
+    if self.ciaza != 0:
+      self.ciaza += 1
+    self.insemination()
+    self.narodziny()
 
-    def narodziny(self):
-        global animals
-        global world
-        global born
-        rodzacy = True
-        zapladniacz = True
-        if self.ciaza == self.lenCiaza:
-            #if random.randint(1, 100) > 50:
-            #    rodzacy = True
-            #else:
-            #    zapladniacz = False
-            a = animal(self.posX+1, self.posY, zapladniacz=zapladniacz, rodzacy= rodzacy)
-            born.add(a)
-            # a = animal(self.posX - 1, self.posY, zapladniacz=zapladniacz, rodzacy=rodzacy)
-            # born.add(a)
-            # a = animal(self.posX , self.posY+1, zapladniacz=zapladniacz, rodzacy=rodzacy)
-            # born.add(a)
-            # a = animal(self.posX, self.posY-1, zapladniacz=zapladniacz, rodzacy=rodzacy)
-            # born.add(a)
+    sides = [1, 3, 2, 4]
+    for n in range(10):
+      i = int(random.random() * 4)
+      j = int(random.random() * 4)
+      sides[i], sides[j] = sides[j], sides[i]
+    moved = False
 
-            world[a.posY][a.posX] = a
-            # if not isinstance(world[self.posY][self.posX + 1], animal):
-            #     rodzacy  = False
-            #     zapladniacz = False
-            #     if random.randint(1,100) > 50:
-            #         rodzacy = True
-            #     else:
-            #         zapladniacz = False
-            #     a = animal(self.posX+1, self.posY, zapladniacz=zapladniacz, rodzacy= rodzacy)
-            #     born.add(a)
-            #     world[a.posY][a.posX] = a
-            # elif not isinstance(world[self.posY+1][self.posX], animal):
-            #     rodzacy  = False
-            #     zapladniacz = False
-            #     if random.randint(1,100) > 50:
-            #         rodzacy = True
-            #     else:
-            #         zapladniacz = False
-            #     a = animal(self.posX, self.posY+1, zapladniacz=zapladniacz, rodzacy= rodzacy)
-            #     born.add(a)
-            #     world[a.posY][a.posX] = a
-            # elif not isinstance(world[self.posY - 1][self.posX], animal):
-            #     rodzacy = False
-            #     zapladniacz = False
-            #     if random.randint(1, 100) > 50:
-            #         rodzacy = True
-            #     else:
-            #         zapladniacz = False
-            #     a = animal(self.posX, self.posY - 1, zapladniacz=zapladniacz, rodzacy=rodzacy)
-            #     born.add(a)
-            #     world[a.posY-1][a.posX] = a
-            # elif not isinstance(world[self.posY][self.posX-1], animal):
-            #     rodzacy = False
-            #     zapladniacz = False
-            #     if random.randint(1, 100) > 50:
-            #         rodzacy = True
-            #     else:
-            #         zapladniacz = False
-            #     a = animal(self.posX-1, self.posY, zapladniacz=zapladniacz, rodzacy=rodzacy)
-            #     born.add(a)
-            #     world[a.posY][a.posX-1] = a
-            self.ciaza = 0
-            #print("---------------------- narodziny")
+    for side in sides:
+      match side:
+        case 1:
+          moved = self.goRight()
+        case 2:
+          moved = self.goLeft()
+        case 3:
+          moved = self.goUp()
+        case 4:
+          moved = self.goDown()
+      if moved:
+        break
+    # for side in sides:
+    #     if side == 1 and moved is False:
+    #         moved = self.goRight()
+    #     if side == 2 and moved is False:
+    #         moved = self.goLeft()
+    #     if side == 3 and moved is False:
+    #         moved = self.goUp()
+    #     if side == 4 and moved is False:
+    #         moved = self.goDown()
+    #     if moved:
+    #         break
+    return moved
 
-    def insemination(self):
-        global world
+  def death(self):
+    if self.age >= self.lifeLong:
+      self.die()
 
-        if self.rodzacy is True and self.ciaza == 0 and self.age <= self.lifeLong*0.8:
-            if random.randint(0, 100) > 0:
-                if isinstance(world[self.posY - 1][self.posX], animal) and world[self.posY - 1][self.posX].zapladniacz:
-                    self.ciaza = 1
-                    return
-                if isinstance(world[self.posY + 1][self.posX], animal) and world[self.posY + 1][self.posX].zapladniacz:
-                    self.ciaza = 1
-                    return
-                if isinstance(world[self.posY][self.posX - 1], animal) and world[self.posY][self.posX - 1].zapladniacz:
-                    self.ciaza = 1
-                    return
-                if isinstance(world[self.posY][self.posX + 1], animal) and world[self.posY][self.posX + 1].zapladniacz:
-                    self.ciaza = 1
-                    return
+  def narodziny(self):
+    global animals
+    global world
+    global born
+    rodzacy = True
+    zapladniacz = True
+    if self.ciaza == self.lenCiaza:
+      # if random.randint(1, 100) > 50:
+      #    rodzacy = True
+      # else:
+      #    zapladniacz = False
+      a = animal(self.posX + 1, self.posY, zapladniacz=zapladniacz, rodzacy=rodzacy)
+      born.add(a)
+      # a = animal(self.posX - 1, self.posY, zapladniacz=zapladniacz, rodzacy=rodzacy)
+      # born.add(a)
+      # a = animal(self.posX , self.posY+1, zapladniacz=zapladniacz, rodzacy=rodzacy)
+      # born.add(a)
+      # a = animal(self.posX, self.posY-1, zapladniacz=zapladniacz, rodzacy=rodzacy)
+      # born.add(a)
 
-    def goLeft(self):
-        global world
-        if self.posX - 1 > 0 and world[self.posY][self.posX-1] == 0:
-            world[self.posY][self.posX-1] = self
-            world[self.posY][self.posX] = 0
-            self.posX = self.posX - 1
-            return True
-        return False
+      world[a.posY][a.posX] = a
+      # if not isinstance(world[self.posY][self.posX + 1], animal):
+      #     rodzacy  = False
+      #     zapladniacz = False
+      #     if random.randint(1,100) > 50:
+      #         rodzacy = True
+      #     else:
+      #         zapladniacz = False
+      #     a = animal(self.posX+1, self.posY, zapladniacz=zapladniacz, rodzacy= rodzacy)
+      #     born.add(a)
+      #     world[a.posY][a.posX] = a
+      # elif not isinstance(world[self.posY+1][self.posX], animal):
+      #     rodzacy  = False
+      #     zapladniacz = False
+      #     if random.randint(1,100) > 50:
+      #         rodzacy = True
+      #     else:
+      #         zapladniacz = False
+      #     a = animal(self.posX, self.posY+1, zapladniacz=zapladniacz, rodzacy= rodzacy)
+      #     born.add(a)
+      #     world[a.posY][a.posX] = a
+      # elif not isinstance(world[self.posY - 1][self.posX], animal):
+      #     rodzacy = False
+      #     zapladniacz = False
+      #     if random.randint(1, 100) > 50:
+      #         rodzacy = True
+      #     else:
+      #         zapladniacz = False
+      #     a = animal(self.posX, self.posY - 1, zapladniacz=zapladniacz, rodzacy=rodzacy)
+      #     born.add(a)
+      #     world[a.posY-1][a.posX] = a
+      # elif not isinstance(world[self.posY][self.posX-1], animal):
+      #     rodzacy = False
+      #     zapladniacz = False
+      #     if random.randint(1, 100) > 50:
+      #         rodzacy = True
+      #     else:
+      #         zapladniacz = False
+      #     a = animal(self.posX-1, self.posY, zapladniacz=zapladniacz, rodzacy=rodzacy)
+      #     born.add(a)
+      #     world[a.posY][a.posX-1] = a
+      self.ciaza = 0
+      # print("---------------------- narodziny")
 
-    def goRight(self):
-        global world
-        if self.posX + 1 < 100 and world[self.posY][self.posX + 1] == 0:
-            world[self.posY][self.posX + 1] = self
-            world[self.posY][self.posX] = 0
-            self.posX = self.posX + 1
-            return True
-        return False
+  def insemination(self):
+    global world
 
-    def goUp(self):
-        global world
-        if self.posY - 1 > 0 and world[self.posY -1][self.posX] == 0:
-            world[self.posY - 1][self.posX] = self
-            world[self.posY][self.posX] = 0
-            self.posY = self.posY - 1
-            return True
-        return False
+    if self.rodzacy is True and self.ciaza == 0 and self.age <= self.lifeLong * 0.8:
+      if random.randint(0, 100) > 0:
+        if isinstance(world[self.posY - 1][self.posX], animal) and world[self.posY - 1][self.posX].zapladniacz:
+          self.ciaza = 1
+          return
+        if isinstance(world[self.posY + 1][self.posX], animal) and world[self.posY + 1][self.posX].zapladniacz:
+          self.ciaza = 1
+          return
+        if isinstance(world[self.posY][self.posX - 1], animal) and world[self.posY][self.posX - 1].zapladniacz:
+          self.ciaza = 1
+          return
+        if isinstance(world[self.posY][self.posX + 1], animal) and world[self.posY][self.posX + 1].zapladniacz:
+          self.ciaza = 1
+          return
 
-    def goDown(self):
-        global world
-        if self.posY + 1 < 100 and world[self.posY + 1][self.posX] == 0:
-            world[self.posY + 1][self.posX] = self
-            world[self.posY][self.posX] = 0
-            self.posY = self.posY + 1
-            return True
-        return False
+  def goLeft(self):
+    global world
+    if self.posX - 1 > 0 and world[self.posY][self.posX - 1] == None:
+      world[self.posY][self.posX - 1] = self
+      world[self.posY][self.posX] = None
+      self.posX = self.posX - 1
+      return True
+    return False
+
+  def goRight(self):
+    global world
+    if self.posX + 1 < 100 and world[self.posY][self.posX + 1] == None:
+      world[self.posY][self.posX + 1] = self
+      world[self.posY][self.posX] = None
+      self.posX = self.posX + 1
+      return True
+    return False
+
+  def goUp(self):
+    global world
+    if self.posY - 1 > 0 and world[self.posY - 1][self.posX] == None:
+      world[self.posY - 1][self.posX] = self
+      world[self.posY][self.posX] = None
+      self.posY = self.posY - 1
+      return True
+    return False
+
+  def goDown(self):
+    global world
+    if self.posY + 1 < 100 and world[self.posY + 1][self.posX] == None:
+      world[self.posY + 1][self.posX] = self
+      world[self.posY][self.posX] = None
+      self.posY = self.posY + 1
+      return True
+    return False
 
 
 for i in range(15):
-    a = animal(random.randint(1,15),random.randint(1,15),zapladniacz=False)
-    animals.add(a)
-    world[a.posY][a.posX] = a
+  a = animal(random.randint(1, 15), random.randint(1, 15), zapladniacz=False)
+  animals.add(a)
+  world[a.posY][a.posX] = a
 for i in range(15):
-    a = animal(random.randint(1,15),random.randint(1,15),rodzacy=False)
-    animals.add(a)
-    world[a.posY][a.posX] = a
+  a = animal(random.randint(1, 15), random.randint(1, 15), rodzacy=False)
+  animals.add(a)
+  world[a.posY][a.posX] = a
 wait = 50
 run = True
-color = (255,255,255)
+color = (255, 255, 255)
 window.fill(color)
 clock = pygame.time.Clock()
 cProfile.run("""
@@ -251,7 +254,7 @@ while run:
 
         pygame.display.update()
 
-clock.tick(30)
+clock.tick(10)
 """)
 pygame.quit()
 exit()
