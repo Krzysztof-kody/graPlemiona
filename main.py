@@ -3,7 +3,7 @@ import random
 import cProfile
 
 pygame.init()
-window = pygame.display.set_mode((300, 300))
+window = pygame.display.set_mode((400, 400))
 world = [[None] * 300 for i in range(300)]
 animals = set()
 died = set()
@@ -32,9 +32,9 @@ class animal:
     self.alive = True
     self.posX = posX
     self.posY = posY
-    self.ciaza = -10
+    self.ciaza = 0
     self.lenCiaza = 50
-    self.lifeLong = 255
+    self.lifeLong = 1000
     self.trup = False
 
   def die(self):
@@ -222,7 +222,7 @@ run = True
 color = (255, 255, 255)
 window.fill(color)
 clock = pygame.time.Clock()
-cProfile.run("""
+
 while run:
 
     for event in pygame.event.get():
@@ -247,14 +247,11 @@ while run:
     if wait <= 0:
         wait = 0
         for pix in animals:
-            if pix.trup:
-                print("trup")
-                window.set_at((50 + j, 50 + i), color)
-            window.set_at((50 + pix.posX, 50 + pix.posY), (255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255))
-
+            #window.set_at((50 + pix.posX, 50 + pix.posY), (255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255))
+            pygame.draw.rect(window,(255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255),(50 + pix.posX*3, 50 + pix.posY*3,3,3))
         pygame.display.update()
 
-clock.tick(10)
-""")
+    clock.tick(10)
+
 pygame.quit()
 exit()
