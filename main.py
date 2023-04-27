@@ -1,5 +1,7 @@
 import pygame
 import random
+import cProfile
+
 pygame.init()
 window = pygame.display.set_mode((300, 300))
 world = [[0]*300 for i in range(300)]
@@ -51,8 +53,8 @@ class animal:
 
         kierunki = [1,3,2,4]
         for n in range(10):
-            i = random.randint(0, 3)
-            j = random.randint(0, 3)
+            i = int(random.random()*4)
+            j = int(random.random()*4)
             kierunki[i], kierunki[j] = kierunki[j], kierunki[i]
         poruszony = False
 
@@ -217,6 +219,7 @@ run = True
 color = (255,255,255)
 window.fill(color)
 clock = pygame.time.Clock()
+cProfile.run("""
 while run:
 
     for event in pygame.event.get():
@@ -247,8 +250,8 @@ while run:
             window.set_at((50 + pix.posX, 50 + pix.posY), (255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255))
 
         pygame.display.update()
-    # pygame.time.delay(50)
-    clock.tick(30)
 
+clock.tick(30)
+""")
 pygame.quit()
 exit()
