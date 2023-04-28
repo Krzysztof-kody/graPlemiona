@@ -1,3 +1,5 @@
+import pstats
+
 import pygame
 import random
 import cProfile
@@ -252,6 +254,8 @@ while run:
         pygame.display.update()
 
 clock.tick(30)
-""")
+""", 'restats')
+p = pstats.Stats('restats')
+p.dump_stats(filename='profiling.prof')
 pygame.quit()
 exit()
