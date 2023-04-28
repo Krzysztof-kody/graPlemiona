@@ -21,8 +21,9 @@ class Animal:
     posY = 0
     ciaza = 0
     lenCiaza = 0
+    tribal = 1
 
-    def __init__(self, posx=0, posy=0, zapladniacz=True, rodzacy=True):
+    def __init__(self, posx=0, posy=0, zapladniacz=True, rodzacy=True, tribal=1, lifelong = 100):
         self.color = (255, 255, 255)
         self.life = 10
         self.age = 0
@@ -33,8 +34,9 @@ class Animal:
         self.posY = posy
         self.ciaza = 0
         self.lenCiaza = 50
-        self.lifeLong = 1000
+        self.lifeLong = lifelong
         self.trup = False
+        self.tribal = tribal
 
     def die(self):
         global died
@@ -100,7 +102,7 @@ class Animal:
             #    rodzacy = True
             # else:
             #    zapladniacz = False
-            a = Animal(self.posX + 1, self.posY, zapladniacz=zapladniacz, rodzacy=rodzacy)
+            a = Animal(self.posX + 1, self.posY, zapladniacz=zapladniacz, rodzacy=rodzacy, tribal=self.tribal, lifelong=int(self.lifeLong*(random.random()+0.5)))
             born.add(a)
             # a = Animal(self.posX - 1, self.posY, zapladniacz=zapladniacz, rodzacy=rodzacy)
             # born.add(a)
@@ -158,16 +160,20 @@ class Animal:
 
         if self.rodzacy is True and self.ciaza == 0 and self.age <= self.lifeLong * 0.8:
             if random.randint(0, 100) > 0:
-                if isinstance(world[self.posY - 1][self.posX], Animal) and world[self.posY - 1][self.posX].zapladniacz:
+                if isinstance(world[self.posY - 1][self.posX], Animal) \
+                        and (world[self.posY - 1][self.posX].trup == False and world[self.posY - 1][self.posX].zapladniacz and world[self.posY - 1][self.posX].tribal == self.tribal):
                     self.ciaza = 1
                     return
-                if isinstance(world[self.posY + 1][self.posX], Animal) and world[self.posY + 1][self.posX].zapladniacz:
+                if isinstance(world[self.posY + 1][self.posX], Animal) \
+                        and (world[self.posY + 1][self.posX].trup == False and world[self.posY + 1][self.posX].zapladniacz and world[self.posY + 1][self.posX].tribal == self.tribal):
                     self.ciaza = 1
                     return
-                if isinstance(world[self.posY][self.posX - 1], Animal) and world[self.posY][self.posX - 1].zapladniacz:
+                if isinstance(world[self.posY][self.posX - 1], Animal) \
+                        and (world[self.posY][self.posX - 1].trup == False and world[self.posY][self.posX - 1].zapladniacz and world[self.posY][self.posX - 1].tribal == self.tribal):
                     self.ciaza = 1
                     return
-                if isinstance(world[self.posY][self.posX + 1], Animal) and world[self.posY][self.posX + 1].zapladniacz:
+                if isinstance(world[self.posY][self.posX + 1], Animal) \
+                        and (world[self.posY][self.posX + 1].trup ==  False and world[self.posY][self.posX + 1].zapladniacz and world[self.posY][self.posX + 1].tribal == self.tribal):
                     self.ciaza = 1
                     return
 
@@ -178,6 +184,10 @@ class Animal:
             world[self.posY][self.posX] = None
             self.posX -= 1
             return True
+        elif not world[self.posY][self.posX - 1] is None:
+            if world[self.posY][self.posX - 1].tribal != self.tribal:
+                world[self.posY][self.posX - 1].age += 50
+                world[self.posY][self.posX - 1].death()
         return False
 
     def goRight(self):
@@ -187,6 +197,10 @@ class Animal:
             world[self.posY][self.posX] = None
             self.posX += 1
             return True
+        elif not world[self.posY][self.posX + 1] is None:
+            if world[self.posY][self.posX + 1].tribal != self.tribal:
+                world[self.posY][self.posX + 1].age += 50
+                world[self.posY][self.posX + 1].death()
         return False
 
     def goUp(self):
@@ -196,6 +210,10 @@ class Animal:
             world[self.posY][self.posX] = None
             self.posY = self.posY - 1
             return True
+        elif not world[self.posY - 1][self.posX] is None:
+            if world[self.posY - 1][self.posX].tribal != self.tribal:
+                world[self.posY - 1][self.posX].age += 50
+                world[self.posY - 1][self.posX].death()
         return False
 
     def goDown(self):
@@ -205,17 +223,32 @@ class Animal:
             world[self.posY][self.posX] = None
             self.posY = self.posY + 1
             return True
+        elif not world[self.posY + 1][self.posX] is None:
+            if world[self.posY + 1][self.posX].tribal != self.tribal:
+                world[self.posY + 1][self.posX].age += 50
+                world[self.posY + 1][self.posX].death()
         return False
 
 
 for i in range(15):
-    a = Animal(random.randint(1, 15), random.randint(1, 15), zapladniacz=False)
+    a = Animal(random.randint(1, 15), random.randint(1, 15), zapladniacz=False, lifelong=1000)
     animals.add(a)
     world[a.posY][a.posX] = a
 for i in range(15):
-    a = Animal(random.randint(1, 15), random.randint(1, 15), rodzacy=False)
+    a = Animal(random.randint(1, 15), random.randint(1, 15), rodzacy=False, lifelong=1000)
     animals.add(a)
     world[a.posY][a.posX] = a
+
+for i in range(15):
+    a = Animal(80+random.randint(1, 15), 80+random.randint(1, 15), zapladniacz=False, tribal=2, lifelong=900)
+    animals.add(a)
+    world[a.posY][a.posX] = a
+for i in range(15):
+    a = Animal(80+random.randint(1, 15), 80+random.randint(1, 15), rodzacy=False, tribal=2, lifelong=900)
+    animals.add(a)
+    world[a.posY][a.posX] = a
+
+
 wait = 50
 run = True
 color = (255, 255, 255)
@@ -245,9 +278,13 @@ while run:
             255 - int((pix.age / pix.lifeLong) * 255),
             255 - int((pix.age / pix.lifeLong) * 255)),
             (50 + pix.posX * 3, 50 + pix.posY * 3, 3, 3))
+        if pix.tribal == 1:
+            window.set_at((50 + pix.posX*3+1, 50 + pix.posY*3+1), (255,0,0))
+        elif pix.tribal == 2:
+            window.set_at((50 + pix.posX * 3 + 1, 50 + pix.posY * 3 + 1), (0, 0, 255))
     pygame.display.update()
 
-    clock.tick(10)
+    clock.tick(30)
 
 pygame.quit()
 exit()
