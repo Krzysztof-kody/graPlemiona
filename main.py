@@ -32,7 +32,7 @@ class Animal:
         self.alive = True
         self.posX = posx
         self.posY = posy
-        self.ciaza = 0
+        self.ciaza = -20
         self.lenCiaza = 50
         self.lifeLong = lifelong
         self.trup = False
@@ -273,14 +273,19 @@ while run:
     print(len(animals))
     for pix in animals:
         # window.set_at((50 + pix.posX, 50 + pix.posY), (255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255))
-        pygame.draw.rect(window, (
-            255 - int((pix.age / pix.lifeLong) * 255),
-            255 - int((pix.age / pix.lifeLong) * 255),
-            255 - int((pix.age / pix.lifeLong) * 255)),
-            (50 + pix.posX * 3, 50 + pix.posY * 3, 3, 3))
         if pix.tribal == 1:
+            pygame.draw.rect(window, (
+                255,
+                255 - int((pix.age / pix.lifeLong) * 255),
+                255 - int((pix.age / pix.lifeLong) * 255)),
+                (50 + pix.posX * 3, 50 + pix.posY * 3, 3, 3))
             window.set_at((50 + pix.posX*3+1, 50 + pix.posY*3+1), (255,0,0))
         elif pix.tribal == 2:
+            pygame.draw.rect(window, (
+                255 - int((pix.age / pix.lifeLong) * 255),
+                255 - int((pix.age / pix.lifeLong) * 255),
+                255),
+                (50 + pix.posX * 3, 50 + pix.posY * 3, 3, 3))
             window.set_at((50 + pix.posX * 3 + 1, 50 + pix.posY * 3 + 1), (0, 0, 255))
     pygame.display.update()
 
