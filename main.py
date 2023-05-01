@@ -3,6 +3,10 @@ import random
 
 pygame.init()
 window = pygame.display.set_mode((400, 400))
+pygame.font.init()
+my_font = pygame.font.SysFont('Comic Sans MS', 15)
+
+
 world = [[None] * 300 for i in range(300)]
 animals = set()
 died = set()
@@ -276,7 +280,14 @@ while run:
     born.clear()
 
     window.fill(color)
-    print(len(animals), licz[1], licz[2])
+    #print(len(animals), licz[1], licz[2])
+    pygame.draw.rect(window, (0, 0, 255), (50, 10,  300, 20))
+    pygame.draw.rect(window,(255,0,0),(50,10,(licz[1] / (licz[1] + licz[2]))*300,20))
+    text_surface = my_font.render(str(licz[1]), False, (0, 0, 0))
+    window.blit(text_surface, (50, 30))
+    text_surface = my_font.render(str(licz[2]), False, (0, 0, 0))
+    window.blit(text_surface, (300-text_surface.get_width()+50 , 30))
+
     for pix in animals:
         # window.set_at((50 + pix.posX, 50 + pix.posY), (255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255))
         if pix.tribal == 1:
