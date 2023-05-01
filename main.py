@@ -7,7 +7,7 @@ world = [[None] * 300 for i in range(300)]
 animals = set()
 died = set()
 born = set()
-
+licz = [0,0,0]
 
 class Animal:
     color = None
@@ -23,7 +23,13 @@ class Animal:
     lenCiaza = 0
     tribal = 1
 
+    def __del__(self):
+        global licz
+        licz[self.tribal] -= 1
+
     def __init__(self, posx=0, posy=0, zapladniacz=True, rodzacy=True, tribal=1, lifelong = 100):
+        global licz
+        licz[tribal] += 1
         self.color = (255, 255, 255)
         self.life = 10
         self.age = 0
@@ -40,10 +46,10 @@ class Animal:
 
     def die(self):
         global died
+        global licz
         self.trup = True
         world[self.posY][self.posX] = None
         died.add(self)
-
     def go(self):
         global died
         self.age += 1
@@ -270,7 +276,7 @@ while run:
     born.clear()
 
     window.fill(color)
-    print(len(animals))
+    print(len(animals), licz[1], licz[2])
     for pix in animals:
         # window.set_at((50 + pix.posX, 50 + pix.posY), (255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255, 255-(pix.age/pix.lifeLong)*255))
         if pix.tribal == 1:
